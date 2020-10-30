@@ -24,3 +24,9 @@ class UserSerializer(ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+
+
+class UserInfoSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', ]
