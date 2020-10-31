@@ -20,7 +20,7 @@ class TimestampAbstractModel(models.Model):
         abstract = True
 
 
-class User(IdAbstractModel, TimestampAbstractModel, AbstractUser):
+class User(TimestampAbstractModel, AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
 
     USERNAME_FIELD = 'username'
