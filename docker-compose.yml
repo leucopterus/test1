@@ -1,6 +1,9 @@
 version: '3'
 
 services:
+  redis:
+    image: "redis:alpine"
+
   db:
     image: postgres
     env_file:
@@ -18,10 +21,37 @@ services:
       dockerfile: Dockerfile
     env_file:
       - .env
+    command: ["./wait_for_psql_avail.sh"]
     volumes:
       - .:/code
     ports:
       - "8000:8000"
       - "587:587"
     depends_on:
+      - db
+
+  celery:
+    build: .
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    command: ["./wait_for_web_avail_celery.sh"]
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
+      - db
+
+  celery-beat:
+    build: .
+    env_file:
+      - .env
+    command: ["./wait_for_web_avail_celery_beat.sh"]
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
       - db

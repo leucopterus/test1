@@ -31,9 +31,9 @@ class EventViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         user_id = request.user.id
         if not request.user.is_superuser:
-            queryset = self.get_queryset().prefetch_related().filter(
+            queryset = self.get_queryset().prefetch_related('participators').filter(
                 Q(organizer_id=user_id) | Q(participators__id__in=[user_id])
-            )
+            ).distinct('id')
         else:
             queryset = self.get_queryset()
 

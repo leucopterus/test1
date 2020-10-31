@@ -40,7 +40,20 @@ INSTALLED_APPS = [
     'rest_framework',
     'apps.base',
     'apps.event',
+    'django_celery_beat',
 ]
+
+CELERY_BROKER_URL = 'redis://redis:6379'
+CELERY_RESULT_BACKEND = 'redis://redis:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_BEAT_SCHEDULE = {
+    'check-notification-every-minute': {
+       'task': 'notification',
+       'schedule': 60.0,
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -156,6 +169,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# Email server settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
