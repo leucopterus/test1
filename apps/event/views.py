@@ -8,6 +8,7 @@ from apps.base.custom_permissions import IsOrganizerOrParticapatorOrAdmin
 from apps.event.models import Event
 from apps.event.serializers import EventSerializer, EventCreateSerializer
 from tools.action_based_permission import ActionBasedPermission
+from tools.email_notification import send_mail_notification
 
 
 class EventViewSet(viewsets.ModelViewSet):
@@ -24,6 +25,8 @@ class EventViewSet(viewsets.ModelViewSet):
 
     ordering_fields = ('created',)
     ordering = ('created',)
+
+    EMAIL_SUBJECT = 'New Task Created'
 
     def list(self, request, *args, **kwargs):
         user_id = request.user.id
@@ -51,6 +54,9 @@ class EventViewSet(viewsets.ModelViewSet):
         output_serializer_class = self.get_serializer_class()
         event_data = output_serializer_class(event).data
         headers = self.get_success_headers(event_data)
+
+        send_mail_notification(self.EMAIL_SUBJECT, event)
+
         return Response(event_data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
