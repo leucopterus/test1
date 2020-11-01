@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
 
@@ -19,4 +19,6 @@ def send_mail_notification(subject, event):
         }
     )
     email_from = settings.EMAIL_HOST_USER
-    send_mail(subject, '', email_from, recipient_list, html_message=message)
+    msg = EmailMultiAlternatives(subject, '', email_from, recipient_list)
+    msg.attach_alternative(message, 'text/html')
+    msg.send()
