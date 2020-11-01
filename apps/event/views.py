@@ -30,12 +30,19 @@ class EventViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         user_id = request.user.id
-        if not request.user.is_superuser:
-            queryset = self.get_queryset().prefetch_related('participators').filter(
+        user_type = request.query_params.get('type')
+        queryset = self.get_queryset()
+        if user_type in ['organizer', 'participator']:
+            if user_type == 'organizer':
+                queryset = queryset.filter(organizer_id=user_id)
+            elif user_type == 'participator':
+                queryset = queryset.prefetch_related('participators').filter(
+                    participators__id__in=[user_id]
+                ).distinct('id')
+        if not request.user.is_superuser and (not user_type or user_type not in ['organizer', 'participator']):
+            queryset = queryset.prefetch_related('participators').filter(
                 Q(organizer_id=user_id) | Q(participators__id__in=[user_id])
             ).distinct('id')
-        else:
-            queryset = self.get_queryset()
 
         page = self.paginate_queryset(queryset)
         if page is not None:
@@ -55,9 +62,12 @@ class EventViewSet(viewsets.ModelViewSet):
         event_data = output_serializer_class(event).data
         headers = self.get_success_headers(event_data)
 
-        send_mail_notification(self.EMAIL_SUBJECT, event)
-
-        return Response(event_data, status=status.HTTP_201_CREATED, headers=headers)
+        try:
+            send_mail_notification(self.EMAIL_SUBJECT, event)
+        except:
+            pass
+        finally:
+            return Response(event_data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
         return serializer.save()
