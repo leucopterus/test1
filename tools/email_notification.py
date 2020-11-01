@@ -1,8 +1,6 @@
 from django.conf import settings
 from django.core.mail import send_mail
-from django.shortcuts import render
-from django.template.loader import render_to_string, get_template
-from django.template.loaders.base import Loader
+from django.template.loader import render_to_string
 
 
 def send_mail_notification(subject, event):
@@ -21,4 +19,4 @@ def send_mail_notification(subject, event):
         }
     )
     email_from = settings.EMAIL_HOST_USER
-    send_mail(subject, message, email_from, recipient_list)
+    send_mail(subject, '', email_from, recipient_list, html_message=message)

@@ -38,6 +38,7 @@ class EventCreateSerializer(serializers.ModelSerializer):
             'id',
             'title',
             'description',
+            'place',
             'organizer',
             'participators',
             'notification_time',

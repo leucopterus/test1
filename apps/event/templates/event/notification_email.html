@@ -1,14 +1,17 @@
-Event: {{ title }}
-Description: {{ description }}
-This event take place at {{ place }} and starts {{ start_date }}.
-It is organized by {{ organizer.first_name }} {{ organizer.last_name }}
-Next people are invited:
+<h1>Event: {{ title }}</h1>
+<h2>Description: {{ description }}</h2>
+<p>This event take place in {{ place }} and starts {{ start_date }}.</p>
+<p>It is organized by {{ organizer.first_name }} {{ organizer.last_name }}.</p>
+<br>
+<h3>Next people are invited:</h3>
+<ul>
 {% for person in participators %}
-    {{ person.first_name }} {{ person.last_name  }}
+    <li>{{ person.first_name }} {{ person.last_name  }}</li>
 {% empty %}
-    Sorry, there is no participators, just one organizer.
+    <li>Sorry, there is no participators, just one organizer.</li>
 {% endfor %}
+</ul>
+<h3>Event was created in {{ created }}.</h3>
+<hr>
 
-Event was created in {{ created }}.
-
-Best regards
+<p>Best regards</p>
